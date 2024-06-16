@@ -2,14 +2,13 @@
 #include "app_conf.h"
 #include "ble_gap_aci.h"
 #include "ble_hci_le.h"
-#include "otp.h"
 #include "ble_core.h"
 #include "adc-sensors.h"
 #include "rtc.h"
 
 static void populate_service_data(adc_sensor_data_t *sensor_data);
 
-static const char a_LocalName[] = {
+static const char local_name[] = {
     AD_TYPE_COMPLETE_LOCAL_NAME,
     'B',
     'L',
@@ -17,15 +16,14 @@ static const char a_LocalName[] = {
     'N'
 };
 
-uint8_t flags[] =
-    {
-        2,
-        AD_TYPE_FLAGS,
-        (FLAG_BIT_LE_GENERAL_DISCOVERABLE_MODE | FLAG_BIT_BR_EDR_NOT_SUPPORTED)
-    };
+uint8_t flags[] = {
+    2,
+    AD_TYPE_FLAGS,
+    (FLAG_BIT_LE_GENERAL_DISCOVERABLE_MODE | FLAG_BIT_BR_EDR_NOT_SUPPORTED)
+};
 
-uint8_t serviceData[21] = {
-    sizeof(serviceData) - 1,
+uint8_t service_data[21] = {
+    sizeof(service_data) - 1,
     AD_TYPE_SERVICE_DATA,
 
     // 0xfcd2 - bthome.io service UUID
@@ -77,8 +75,8 @@ void Adv_Start(void) {
       CFG_FAST_CONN_ADV_INTERVAL_MAX,
       GAP_PUBLIC_ADDR,
       NO_WHITE_LIST_USE, /* use white list */
-      sizeof(a_LocalName),
-      (uint8_t *) &a_LocalName,
+      sizeof(local_name),
+      (uint8_t *) &local_name,
       0,
       NULL,
       0,
@@ -87,7 +85,7 @@ void Adv_Start(void) {
   /* Remove the TX power level advertisement (this is done to decrease the packet size). */
   aci_gap_delete_ad_type(AD_TYPE_TX_POWER_LEVEL);
   /* Update the service data. */
-  aci_gap_update_adv_data(sizeof(serviceData), serviceData);
+  aci_gap_update_adv_data(sizeof(service_data), service_data);
   /* Update the adverstising flags. */
   aci_gap_update_adv_data(sizeof(flags), flags);
 }
@@ -105,16 +103,16 @@ static void populate_service_data(adc_sensor_data_t *sensor_data) {
   uint16_t battery_voltage = (uint16_t) sensor_data->VRefInt;
   uint32_t lux = (uint32_t) sensor_data->Brightness * 100;
 
-  serviceData[6] = temperature & 0xff;
-  serviceData[7] = temperature >> 8;
+  service_data[6] = temperature & 0xff;
+  service_data[7] = temperature >> 8;
 
-  serviceData[11] = lux & 0xff;
-  serviceData[12] = lux >> 8;
-  serviceData[13] = lux >> 16;
+  service_data[11] = lux & 0xff;
+  service_data[12] = lux >> 8;
+  service_data[13] = lux >> 16;
 
-  serviceData[15] = battery_voltage & 0xff;
-  serviceData[16] = battery_voltage >> 8;
+  service_data[15] = battery_voltage & 0xff;
+  service_data[16] = battery_voltage >> 8;
 
-  serviceData[18] = sensor_data->BatteryPercent;
-  serviceData[20] = packet_id;
+  service_data[18] = sensor_data->BatteryPercent;
+  service_data[20] = packet_id;
 }

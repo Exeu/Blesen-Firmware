@@ -27,8 +27,8 @@ const uint8_t *BleGetBdAddress(void);
 static void Ble_Hci_Gap_Gatt_Init(void);
 static void Adv_Mgr(void);
 
-#define BD_ADDR_SIZE_LOCAL    6
-#define INITIAL_ADV_TIMEOUT            (0.5*1000*1000/CFG_TS_TICK_VAL) /**< 1s */
+#define BD_ADDR_SIZE_LOCAL  6
+#define INITIAL_ADV_TIMEOUT (0.5*1000*1000/CFG_TS_TICK_VAL) /**< 1s */
 PLACE_IN_SECTION("MB_MEM1") ALIGN(4) static TL_CmdPacket_t BleCmdBuffer;
 
 #define ENABLE_ALTERNATE_LUX_FORMULA    1
@@ -132,6 +132,8 @@ void APP_BLE_Init(void) {
 
 static void Adv_Mgr(void) {
   aci_gap_set_non_discoverable();
+  UTIL_SEQ_PauseTask(UTIL_SEQ_DEFAULT);
+  hci_reset();
 
   HAL_ADC_MspDeInit(&hadc1);
   HAL_I2C_DeInit(&hi2c1);
@@ -146,8 +148,9 @@ static void Adv_Mgr(void) {
   UTIL_LPM_SetStopMode(1 << CFG_LPM_APP_BLE, UTIL_LPM_ENABLE);
   UTIL_LPM_SetOffMode(1 << CFG_LPM_APP_BLE, UTIL_LPM_ENABLE);
 
+  uint8_t timer = 2 * 10;
   HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
-  if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 1, RTC_WAKEUPCLOCK_CK_SPRE_16BITS) != HAL_OK) {
+  if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 40, RTC_WAKEUPCLOCK_CK_SPRE_16BITS) != HAL_OK) {
     Error_Handler();
   }
 }
