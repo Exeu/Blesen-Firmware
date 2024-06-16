@@ -5,6 +5,7 @@
 #include "otp.h"
 #include "ble_core.h"
 #include "adc-sensors.h"
+#include "rtc.h"
 
 static void populate_service_data(adc_sensor_data_t *sensor_data);
 
@@ -23,15 +24,15 @@ uint8_t flags[] =
         (FLAG_BIT_LE_GENERAL_DISCOVERABLE_MODE | FLAG_BIT_BR_EDR_NOT_SUPPORTED)
     };
 
-uint8_t serviceData[19] = {
+uint8_t serviceData[21] = {
     sizeof(serviceData) - 1,
     AD_TYPE_SERVICE_DATA,
 
-    // 0xfcd2 - bthome.io service UUID.
+    // 0xfcd2 - bthome.io service UUID
     0xd2,
     0xfc,
 
-    // Service header - no encryption, bt home v2.
+    // Service header - no encryption, bt home v2
     0x40,
 
     // Temperature.
@@ -54,9 +55,13 @@ uint8_t serviceData[19] = {
     0xA8, // 2,984 V
     0x0B, // 2,984 V
 
-    // Battery percentage.
+    // Battery percentage
     0x01,
-    0x5C // 92%
+    0x5C, // 92%
+
+    // Packet-Id
+    0x00,
+    1
 };
 
 void Adv_Start(void) {
@@ -88,6 +93,10 @@ void Adv_Start(void) {
 }
 
 static void populate_service_data(adc_sensor_data_t *sensor_data) {
+  uint32_t packet_id = HAL_RTCEx_BKUPRead(&hrtc, 1);
+  packet_id +=1;
+  HAL_RTCEx_BKUPWrite(&hrtc, 1, packet_id);
+
   uint16_t temperature = (uint16_t) ((float) sensor_data->MCUTemperature * 100.0f);
   uint16_t battery_voltage = (uint16_t) sensor_data->VRefInt;
   uint32_t lux = (uint32_t) sensor_data->Brightness * 100;
@@ -103,4 +112,5 @@ static void populate_service_data(adc_sensor_data_t *sensor_data) {
   serviceData[16] = battery_voltage >> 8;
 
   serviceData[18] = sensor_data->BatteryPercent;
+  serviceData[20] = packet_id;
 }

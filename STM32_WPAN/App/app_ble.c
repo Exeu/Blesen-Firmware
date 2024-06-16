@@ -16,6 +16,9 @@
 #include "svc_ctl.h"
 #include "shci.h"
 #include "blesen-service.h"
+#include "adc.h"
+#include "i2c.h"
+#include "ipcc.h"
 
 static void Ble_Tl_Init(void);
 static void BLE_StatusNot(HCI_TL_CmdStatus_t Status);
@@ -29,14 +32,6 @@ static void Adv_Mgr(void);
 PLACE_IN_SECTION("MB_MEM1") ALIGN(4) static TL_CmdPacket_t BleCmdBuffer;
 
 #define ENABLE_ALTERNATE_LUX_FORMULA    1
-
-static const char a_LocalName[] = {
-    AD_TYPE_COMPLETE_LOCAL_NAME,
-    'B',
-    'L',
-    'S',
-    'N'
-};
 
 static const uint8_t a_MBdAddr[BD_ADDR_SIZE_LOCAL] =
     {
@@ -138,6 +133,16 @@ void APP_BLE_Init(void) {
 static void Adv_Mgr(void) {
   aci_gap_set_non_discoverable();
 
+  HAL_ADC_MspDeInit(&hadc1);
+  HAL_I2C_DeInit(&hi2c1);
+  HAL_IPCC_MspDeInit(&hipcc);
+
+  __HAL_RCC_GPIOC_CLK_DISABLE();
+  __HAL_RCC_GPIOH_CLK_DISABLE();
+  __HAL_RCC_GPIOB_CLK_DISABLE();
+  __HAL_RCC_GPIOA_CLK_DISABLE();
+  __HAL_RCC_GPIOE_CLK_DISABLE();
+
   UTIL_LPM_SetStopMode(1 << CFG_LPM_APP_BLE, UTIL_LPM_ENABLE);
   UTIL_LPM_SetOffMode(1 << CFG_LPM_APP_BLE, UTIL_LPM_ENABLE);
 
@@ -191,13 +196,6 @@ static void Ble_Hci_Gap_Gatt_Init(void) {
       &gap_service_handle,
       &gap_dev_name_char_handle,
       &gap_appearance_char_handle);
-
-  aci_gatt_update_char_value(
-      gap_service_handle,
-      gap_dev_name_char_handle,
-      0,
-      strlen(a_LocalName),
-      (uint8_t *) a_LocalName);
 
   aci_gatt_update_char_value(
       gap_service_handle,
