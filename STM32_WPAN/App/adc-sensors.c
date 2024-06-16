@@ -1,0 +1,72 @@
+#include "adc-sensors.h"
+#include "app_conf.h"
+#include "adc.h"
+
+typedef struct {
+  // High (h) and low (p) voltage (v) and % (p) points.
+  float vh, vl, ph, pl;
+} batt_disch_linear_section_t;
+
+static const batt_disch_linear_section_t sections[] = {
+    {.vh = 3.00f, .vl = 2.90f, .ph = 1.00f, .pl = 0.42f},
+    {.vh = 2.90f, .vl = 2.74f, .ph = 0.42f, .pl = 0.18f},
+    {.vh = 2.74f, .vl = 2.44f, .ph = 0.18f, .pl = 0.06f},
+    {.vh = 2.44f, .vl = 2.01f, .ph = 0.06f, .pl = 0.00f},
+};
+
+static float set_battery_percent(float v);
+float voltage_to_lux(float mv);
+
+void read_sensors(adc_sensor_data_t * sen_data) {
+  HAL_ADC_Start(&hadc1);
+
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+  for (uint8_t i = 0; i < (sizeof(sen_data->RawAdcValues) / sizeof(sen_data->RawAdcValues[0])); i++) {
+    HAL_ADC_PollForConversion(&hadc1, 100);
+    sen_data->RawAdcValues[i] = HAL_ADC_GetValue(&hadc1);
+  }
+  HAL_ADC_Stop(&hadc1);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+
+  sen_data->VRefInt = __HAL_ADC_CALC_VREFANALOG_VOLTAGE(sen_data->RawAdcValues[0], hadc1.Init.Resolution);
+  sen_data->Brightness =
+      voltage_to_lux(__HAL_ADC_CALC_DATA_TO_VOLTAGE(sen_data->VRefInt, sen_data->RawAdcValues[1], hadc1.Init.Resolution));
+  sen_data->MCUTemperature =
+      __HAL_ADC_CALC_TEMPERATURE(sen_data->VRefInt, sen_data->RawAdcValues[2], hadc1.Init.Resolution);
+  sen_data->BatteryPercent = (uint8_t) (set_battery_percent((float) sen_data->VRefInt / 1000.0f) * 100.0f);
+}
+
+static float set_battery_percent(float v) {
+  if (v > sections[0].vh) {
+    return 1.0f;
+  }
+  for (int i = 0; i < sizeof(sections); i++) {
+    const batt_disch_linear_section_t *s = &sections[i];
+    if (v > s->vl) {
+      return s->pl + (v - s->vl) * ((s->ph - s->pl) / (s->vh - s->vl));
+    }
+  }
+  return 0.0f;
+}
+
+float voltage_to_lux(float mv) {
+  if (mv < 70.0f) {
+    return 0.0f;
+  }
+
+  if (ENABLE_ALTERNATE_LUX_FORMULA != 1) {
+    float sensitivity = 0.000396f; // Empfindlichkeit bei 3.3V in A/Lux
+    float current = mv / 470.0f; // I = V / R, R = 470 Ohm
+    float lux = current / sensitivity;
+    return lux * 100;
+  }
+
+  mv -= 70.0f;
+  float lux_sun = 12000.0f;
+  float current_sun = 3.59e-3f;
+  float current = (mv / 1000.0f) / 470.0f;
+  return MAX(0, MIN(lux_sun * current / current_sun, UINT16_MAX));
+}
+
+
+

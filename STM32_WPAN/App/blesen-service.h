@@ -1,0 +1,8 @@
+//
+// Created by Jan Eichhorn on 14.06.24.
+//
+
+#ifndef BLESEN_FW_STM32_WPAN_APP_BLESEN_SERVICE_H_
+#define BLESEN_FW_STM32_WPAN_APP_BLESEN_SERVICE_H_
+void Adv_Start(void);
+#endif //BLESEN_FW_STM32_WPAN_APP_BLESEN_SERVICE_H_
