@@ -94,6 +94,10 @@ void Adv_Start(void) {
 
 static void populate_service_data(adc_sensor_data_t *sensor_data) {
   uint32_t packet_id = HAL_RTCEx_BKUPRead(&hrtc, 1);
+  if (packet_id >= 255) {
+    packet_id = 0;
+  }
+
   packet_id +=1;
   HAL_RTCEx_BKUPWrite(&hrtc, 1, packet_id);
 
