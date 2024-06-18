@@ -12,23 +12,18 @@
 #include "ble_conf.h"
 #include "otp.h"
 #include "ble_core.h"
-#include "rtc.h"
 #include "svc_ctl.h"
 #include "shci.h"
 #include "blesen-service.h"
-#include "adc.h"
-#include "i2c.h"
-#include "ipcc.h"
+#include "advertiser.h"
 
 static void Ble_Tl_Init(void);
 static void BLE_StatusNot(HCI_TL_CmdStatus_t Status);
 static void BLE_UserEvtRx(void *p_Payload);
 const uint8_t *BleGetBdAddress(void);
 static void Ble_Hci_Gap_Gatt_Init(void);
-static void Adv_Mgr(void);
 
 #define BD_ADDR_SIZE_LOCAL  6
-#define INITIAL_ADV_TIMEOUT (0.5*1000*1000/CFG_TS_TICK_VAL) /**< 1s */
 PLACE_IN_SECTION("MB_MEM1") ALIGN(4) static TL_CmdPacket_t BleCmdBuffer;
 
 #define ENABLE_ALTERNATE_LUX_FORMULA    1
@@ -57,12 +52,6 @@ static const uint8_t a_BLE_CfgErValue[16] = CFG_BLE_ER;
 
 #define APPBLE_GAP_DEVICE_NAME_LENGTH 7
 PLACE_IN_SECTION("MB_MEM1") ALIGN(4) static TL_CmdPacket_t BleCmdBuffer;
-
-typedef struct {
-  uint8_t Advertising_mgr_timer_Id;
-} BleApplicationContext_t;
-
-static BleApplicationContext_t BleApplicationContext;
 
 void APP_BLE_Init(void) {
   SHCI_CmdStatus_t status;
@@ -125,34 +114,9 @@ void APP_BLE_Init(void) {
 
   hci_le_set_scan_response_data(0, NULL);
 
-  HW_TS_Create(CFG_TIM_PROC_ID_ISR, &(BleApplicationContext.Advertising_mgr_timer_Id), hw_ts_SingleShot, Adv_Mgr);
-  Adv_Start();
-  HW_TS_Start(BleApplicationContext.Advertising_mgr_timer_Id, INITIAL_ADV_TIMEOUT);
-}
-
-static void Adv_Mgr(void) {
-  aci_gap_set_non_discoverable();
-  UTIL_SEQ_PauseTask(UTIL_SEQ_DEFAULT);
-  hci_reset();
-
-  HAL_ADC_MspDeInit(&hadc1);
-  HAL_I2C_DeInit(&hi2c1);
-  HAL_IPCC_MspDeInit(&hipcc);
-
-  __HAL_RCC_GPIOC_CLK_DISABLE();
-  __HAL_RCC_GPIOH_CLK_DISABLE();
-  __HAL_RCC_GPIOB_CLK_DISABLE();
-  __HAL_RCC_GPIOA_CLK_DISABLE();
-  __HAL_RCC_GPIOE_CLK_DISABLE();
-
-  UTIL_LPM_SetStopMode(1 << CFG_LPM_APP_BLE, UTIL_LPM_ENABLE);
-  UTIL_LPM_SetOffMode(1 << CFG_LPM_APP_BLE, UTIL_LPM_ENABLE);
-
-  uint8_t timer = 2 * 10;
-  HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
-  if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 40, RTC_WAKEUPCLOCK_CK_SPRE_16BITS) != HAL_OK) {
-    Error_Handler();
-  }
+  populate_service_data();
+  Adv_Init();
+  Adv_Start(service_data, sizeof(service_data));
 }
 
 static void Ble_Hci_Gap_Gatt_Init(void) {

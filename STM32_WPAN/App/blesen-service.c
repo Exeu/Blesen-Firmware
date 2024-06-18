@@ -1,28 +1,11 @@
 #include "blesen-service.h"
 #include "app_conf.h"
 #include "ble_gap_aci.h"
-#include "ble_hci_le.h"
-#include "ble_core.h"
 #include "adc-sensors.h"
 #include "rtc.h"
 
-static void populate_service_data(adc_sensor_data_t *sensor_data);
 
-static const char local_name[] = {
-    AD_TYPE_COMPLETE_LOCAL_NAME,
-    'B',
-    'L',
-    'S',
-    'N'
-};
-
-uint8_t flags[] = {
-    2,
-    AD_TYPE_FLAGS,
-    (FLAG_BIT_LE_GENERAL_DISCOVERABLE_MODE | FLAG_BIT_BR_EDR_NOT_SUPPORTED)
-};
-
-uint8_t service_data[21] = {
+uint8_t service_data[SERVICE_DATA_LENGTH] = {
     sizeof(service_data) - 1,
     AD_TYPE_SERVICE_DATA,
 
@@ -62,35 +45,10 @@ uint8_t service_data[21] = {
     1
 };
 
-void Adv_Start(void) {
-  adc_sensor_data_t sa;
-  read_sensors(&sa);
-  populate_service_data(&sa);
+void populate_service_data() {
+  adc_sensor_data_t sensor_data;
+  read_sensors(&sensor_data);
 
-  hci_le_set_scan_response_data(0, NULL);
-
-  aci_gap_set_discoverable(
-      ADV_NONCONN_IND,
-      CFG_FAST_CONN_ADV_INTERVAL_MIN,
-      CFG_FAST_CONN_ADV_INTERVAL_MAX,
-      GAP_PUBLIC_ADDR,
-      NO_WHITE_LIST_USE, /* use white list */
-      sizeof(local_name),
-      (uint8_t *) &local_name,
-      0,
-      NULL,
-      0,
-      0);
-
-  /* Remove the TX power level advertisement (this is done to decrease the packet size). */
-  aci_gap_delete_ad_type(AD_TYPE_TX_POWER_LEVEL);
-  /* Update the service data. */
-  aci_gap_update_adv_data(sizeof(service_data), service_data);
-  /* Update the adverstising flags. */
-  aci_gap_update_adv_data(sizeof(flags), flags);
-}
-
-static void populate_service_data(adc_sensor_data_t *sensor_data) {
   uint32_t packet_id = HAL_RTCEx_BKUPRead(&hrtc, 1);
   if (packet_id >= 255) {
     packet_id = 0;
@@ -99,9 +57,9 @@ static void populate_service_data(adc_sensor_data_t *sensor_data) {
   packet_id +=1;
   HAL_RTCEx_BKUPWrite(&hrtc, 1, packet_id);
 
-  uint16_t temperature = (uint16_t) ((float) sensor_data->MCUTemperature * 100.0f);
-  uint16_t battery_voltage = (uint16_t) sensor_data->VRefInt;
-  uint32_t lux = (uint32_t) sensor_data->Brightness * 100;
+  uint16_t temperature = (uint16_t) ((float) sensor_data.MCUTemperature * 100.0f);
+  uint16_t battery_voltage = (uint16_t) sensor_data.VRefInt;
+  uint32_t lux = (uint32_t) sensor_data.Brightness * 100;
 
   service_data[6] = temperature & 0xff;
   service_data[7] = temperature >> 8;
@@ -113,6 +71,6 @@ static void populate_service_data(adc_sensor_data_t *sensor_data) {
   service_data[15] = battery_voltage & 0xff;
   service_data[16] = battery_voltage >> 8;
 
-  service_data[18] = sensor_data->BatteryPercent;
+  service_data[18] = sensor_data.BatteryPercent;
   service_data[20] = packet_id;
 }

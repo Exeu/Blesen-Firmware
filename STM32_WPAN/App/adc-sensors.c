@@ -1,6 +1,8 @@
 #include "adc-sensors.h"
 #include "app_conf.h"
 #include "adc.h"
+#include "shtc3.h"
+#include "i2c.h"
 
 typedef struct {
   // High (h) and low (p) voltage (v) and % (p) points.
@@ -15,7 +17,7 @@ static const batt_disch_linear_section_t sections[] = {
 };
 
 static float set_battery_percent(float v);
-float voltage_to_lux(float mv);
+float voltage_to_lux(uint16_t mv);
 
 void read_sensors(adc_sensor_data_t * sen_data) {
   HAL_ADC_Start(&hadc1);
@@ -29,11 +31,11 @@ void read_sensors(adc_sensor_data_t * sen_data) {
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
 
   sen_data->VRefInt = __HAL_ADC_CALC_VREFANALOG_VOLTAGE(sen_data->RawAdcValues[0], hadc1.Init.Resolution);
-  sen_data->Brightness =
-      voltage_to_lux(__HAL_ADC_CALC_DATA_TO_VOLTAGE(sen_data->VRefInt, sen_data->RawAdcValues[1], hadc1.Init.Resolution));
-  sen_data->MCUTemperature =
-      __HAL_ADC_CALC_TEMPERATURE(sen_data->VRefInt, sen_data->RawAdcValues[2], hadc1.Init.Resolution);
+  sen_data->Brightness = (uint32_t) voltage_to_lux(__HAL_ADC_CALC_DATA_TO_VOLTAGE(sen_data->VRefInt, sen_data->RawAdcValues[1], hadc1.Init.Resolution) );
+  sen_data->MCUTemperature = __HAL_ADC_CALC_TEMPERATURE(sen_data->VRefInt, sen_data->RawAdcValues[2], hadc1.Init.Resolution);
   sen_data->BatteryPercent = (uint8_t) (set_battery_percent((float) sen_data->VRefInt / 1000.0f) * 100.0f);
+
+  //shtc3_read_id(&hi2c1);
 }
 
 static float set_battery_percent(float v) {
@@ -49,9 +51,9 @@ static float set_battery_percent(float v) {
   return 0.0f;
 }
 
-float voltage_to_lux(float mv) {
-  if (mv < 70.0f) {
-    return 0.0f;
+float voltage_to_lux(uint16_t mv) {
+  if (mv < 70) {
+    return 0;
   }
 
   if (ENABLE_ALTERNATE_LUX_FORMULA != 1) {
@@ -61,10 +63,10 @@ float voltage_to_lux(float mv) {
     return lux * 100;
   }
 
-  mv -= 70.0f;
+  mv -= 70;
   float lux_sun = 12000.0f;
   float current_sun = 3.59e-3f;
-  float current = (mv / 1000.0f) / 470.0f;
+  float current = ((float) mv / 1000.0f) / 470.0f;
   return MAX(0, MIN(lux_sun * current / current_sun, UINT16_MAX));
 }
 
