@@ -122,7 +122,6 @@ void APP_BLE_Init(void) {
 static void Ble_Hci_Gap_Gatt_Init(void) {
   uint16_t gap_service_handle, gap_dev_name_char_handle, gap_appearance_char_handle;
   const uint8_t *p_bd_addr;
-  uint16_t a_appearance[1] = {BLE_CFG_GAP_APPEARANCE};
 
   /**
    * Initialize HCI layer
@@ -163,13 +162,6 @@ static void Ble_Hci_Gap_Gatt_Init(void) {
       &gap_service_handle,
       &gap_dev_name_char_handle,
       &gap_appearance_char_handle);
-
-  aci_gatt_update_char_value(
-      gap_service_handle,
-      gap_appearance_char_handle,
-      0,
-      2,
-      (uint8_t *) &a_appearance);
 }
 
 const uint8_t *BleGetBdAddress(void) {

@@ -1,7 +1,3 @@
-//
-// Created by Jan Eichhorn on 17.06.24.
-//
-
 #include "advertiser.h"
 #include "ble_gap_aci.h"
 #include "stm32_seq.h"
@@ -22,12 +18,6 @@ static const char local_name[] = {
     'L',
     'S',
     'N'
-};
-
-uint8_t flags[] = {
-    2,
-    AD_TYPE_FLAGS,
-    (FLAG_BIT_LE_GENERAL_DISCOVERABLE_MODE | FLAG_BIT_BR_EDR_NOT_SUPPORTED)
 };
 
 typedef struct {
@@ -61,14 +51,15 @@ void Adv_Start(uint8_t *sd, uint8_t size_t) {
   aci_gap_delete_ad_type(AD_TYPE_TX_POWER_LEVEL);
   /* Update the service data. */
   aci_gap_update_adv_data(size_t, sd);
-  /* Update the adverstising flags. */
-  aci_gap_update_adv_data(sizeof(flags), flags);
 
   HW_TS_Start(AdvContext.Advertising_mgr_timer_Id, INITIAL_ADV_TIMEOUT);
 }
 
 static void Adv_Mgr(void) {
-  aci_gap_set_non_discoverable();
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  aci_gap_set_non_discoverable(); // Setting off BLE activities. CPU2 can now enter power saving modes
+
   UTIL_SEQ_PauseTask(UTIL_SEQ_DEFAULT);
   hci_reset();
 
@@ -76,17 +67,33 @@ static void Adv_Mgr(void) {
   HAL_I2C_DeInit(&hi2c1);
   HAL_IPCC_MspDeInit(&hipcc);
 
+  // Disabling all GPIO related clocks
   __HAL_RCC_GPIOC_CLK_DISABLE();
   __HAL_RCC_GPIOH_CLK_DISABLE();
   __HAL_RCC_GPIOB_CLK_DISABLE();
   __HAL_RCC_GPIOA_CLK_DISABLE();
   __HAL_RCC_GPIOE_CLK_DISABLE();
 
+  // Setting the previously used pins into analog mode.
+  // Analog mode is deactivating any internal circuit which reduces power consumption
+  GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  // Allowing the LPM to enter Off-Mode aka StandBy (second-lowest power consumption)
   UTIL_LPM_SetStopMode(1 << CFG_LPM_APP_BLE, UTIL_LPM_ENABLE);
   UTIL_LPM_SetOffMode(1 << CFG_LPM_APP_BLE, UTIL_LPM_ENABLE);
 
+  // Activate low power wake-up timer
+  uint8_t wakeup_counter = 40; // 40 is around 11 minutes
   HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
-  if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 40, RTC_WAKEUPCLOCK_CK_SPRE_16BITS) != HAL_OK) {
+  if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, wakeup_counter, RTC_WAKEUPCLOCK_CK_SPRE_16BITS) != HAL_OK) {
     Error_Handler();
   }
 }

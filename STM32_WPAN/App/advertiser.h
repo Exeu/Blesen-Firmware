@@ -1,7 +1,3 @@
-//
-// Created by Jan Eichhorn on 17.06.24.
-//
-
 #ifndef BLESEN_FW_STM32_WPAN_APP_ADVERTISER_H_
 #define BLESEN_FW_STM32_WPAN_APP_ADVERTISER_H_
 
