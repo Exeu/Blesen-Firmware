@@ -25,6 +25,7 @@
 #include "rtc.h"
 #include "usart.h"
 #include "gpio.h"
+#include "shtc3.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -104,13 +105,15 @@ int main(void)
   MX_ADC1_Init();
   MX_RTC_Init();
   MX_I2C1_Init();
-  // MX_USART1_UART_Init();
+  MX_USART1_UART_Init();
   MX_RF_Init();
   /* USER CODE BEGIN 2 */
   if (HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED)
       != HAL_OK) {
     return HAL_ERROR;
   }
+
+  uint16_t id = shtc3_read_id(&hi2c1);
 
   /* Init code for STM32_WPAN */
   uint32_t reset_flags = __HAL_RCC_GET_FLAG(RCC_FLAG_PINRST);

@@ -61,8 +61,10 @@ void populate_service_data() {
   uint16_t battery_voltage = (uint16_t) sensor_data.VRefInt;
   uint32_t lux = (uint32_t) sensor_data.Brightness * 100;
 
-  service_data[6] = temperature & 0xff;
-  service_data[7] = temperature >> 8;
+  service_data[6] = sensor_data.Temperature & 0xff;
+  service_data[7] = sensor_data.Temperature >> 8;
+
+  service_data[9] = sensor_data.Humidity;
 
   service_data[11] = lux & 0xff;
   service_data[12] = lux >> 8;
