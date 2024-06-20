@@ -16,6 +16,7 @@
 #include "shci.h"
 #include "blesen-service.h"
 #include "advertiser.h"
+#include "advertiser-extended.h"
 
 static void Ble_Tl_Init(void);
 static void BLE_StatusNot(HCI_TL_CmdStatus_t Status);
@@ -115,8 +116,11 @@ void APP_BLE_Init(void) {
   hci_le_set_scan_response_data(0, NULL);
 
   populate_service_data();
+
   Adv_Init();
   Adv_Start(service_data, sizeof(service_data));
+
+//  Adv_ext_Start();
 }
 
 static void Ble_Hci_Gap_Gatt_Init(void) {
