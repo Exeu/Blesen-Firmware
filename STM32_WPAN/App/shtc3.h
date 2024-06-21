@@ -1,6 +1,3 @@
-// Copyright (c) Konstantin Belyalov. All rights reserved.
-// Licensed under the MIT license.
-
 #ifndef __SHTC3_H
 #define __SHTC3_H
 

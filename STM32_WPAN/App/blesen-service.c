@@ -46,8 +46,9 @@ uint8_t service_data[SERVICE_DATA_LENGTH] = {
 };
 
 void populate_service_data() {
-  adc_sensor_data_t sensor_data;
+  sensor_data_t sensor_data;
   read_sensors(&sensor_data);
+  read_i2c_sensor(&sensor_data);
 
   uint32_t packet_id = HAL_RTCEx_BKUPRead(&hrtc, 1);
   if (packet_id >= 255) {
@@ -57,7 +58,6 @@ void populate_service_data() {
   packet_id +=1;
   HAL_RTCEx_BKUPWrite(&hrtc, 1, packet_id);
 
-  uint16_t temperature = (uint16_t) ((float) sensor_data.MCUTemperature * 100.0f);
   uint16_t battery_voltage = (uint16_t) sensor_data.VRefInt;
   uint32_t lux = (uint32_t) sensor_data.Brightness * 100;
 

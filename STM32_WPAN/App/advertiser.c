@@ -59,7 +59,7 @@ static void Adv_Mgr(void) {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   aci_gap_set_non_discoverable(); // Setting off BLE activities. CPU2 can now enter power saving modes
-
+  LL_PWR_SMPS_Disable();
   UTIL_SEQ_PauseTask(UTIL_SEQ_DEFAULT);
   hci_reset();
 

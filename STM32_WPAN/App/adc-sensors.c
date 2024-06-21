@@ -19,7 +19,7 @@ static const batt_disch_linear_section_t sections[] = {
 static float set_battery_percent(float v);
 float voltage_to_lux(uint16_t mv);
 
-void read_sensors(adc_sensor_data_t * sen_data) {
+void read_sensors(sensor_data_t * sen_data) {
   HAL_ADC_Start(&hadc1);
 
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
@@ -32,14 +32,14 @@ void read_sensors(adc_sensor_data_t * sen_data) {
 
   sen_data->VRefInt = __HAL_ADC_CALC_VREFANALOG_VOLTAGE(sen_data->RawAdcValues[0], hadc1.Init.Resolution);
   sen_data->Brightness = (uint32_t) voltage_to_lux(__HAL_ADC_CALC_DATA_TO_VOLTAGE(sen_data->VRefInt, sen_data->RawAdcValues[1], hadc1.Init.Resolution) );
-  sen_data->MCUTemperature = __HAL_ADC_CALC_TEMPERATURE(sen_data->VRefInt, sen_data->RawAdcValues[2], hadc1.Init.Resolution);
   sen_data->BatteryPercent = (uint8_t) (set_battery_percent((float) sen_data->VRefInt / 1000.0f) * 100.0f);
+}
 
+void read_i2c_sensor(sensor_data_t * sen_data) {
   shtc3_wakeup(&hi2c1);
   HAL_Delay(12);
-  shtc3_perform_measurements(&hi2c1, &sen_data->Temperature, &sen_data->Humidity);
+  shtc3_perform_measurements_low_power(&hi2c1, &sen_data->Temperature, &sen_data->Humidity);
   shtc3_sleep(&hi2c1);
-
 }
 
 static float set_battery_percent(float v) {
