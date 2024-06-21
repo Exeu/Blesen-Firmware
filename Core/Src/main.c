@@ -17,6 +17,7 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include <stdbool.h>
 #include "main.h"
 #include "adc.h"
 #include "i2c.h"
@@ -113,8 +114,16 @@ int main(void)
     return HAL_ERROR;
   }
 
+  shtc3_wakeup(&hi2c1);
+  HAL_Delay(2);
   uint16_t id = shtc3_read_id(&hi2c1);
-
+  if (id == 0) {
+    while(true) {
+      HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
+      HAL_Delay(200);
+    }
+  }
+  shtc3_sleep(&hi2c1);
   /* Init code for STM32_WPAN */
   uint32_t reset_flags = __HAL_RCC_GET_FLAG(RCC_FLAG_PINRST);
   if (reset_flags)
