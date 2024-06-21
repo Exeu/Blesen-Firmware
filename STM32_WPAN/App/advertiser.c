@@ -96,7 +96,10 @@ static void Adv_Mgr(void) {
   HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
   HAL_RTC_MspDeInit(&hrtc);
 
-  HAL_LPTIM_TimeOut_Start_IT(&hlptim1, 0, 0);
+  if (HAL_LPTIM_TimeOut_Start_IT(&hlptim1, 65535, 1) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /**
   if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, wakeup_counter, RTC_WAKEUPCLOCK_CK_SPRE_16BITS) != HAL_OK) {
     Error_Handler();

@@ -38,9 +38,11 @@ void MX_LPTIM1_Init(void)
 
   /* USER CODE END LPTIM1_Init 1 */
   hlptim1.Instance = LPTIM1;
-  hlptim1.Init.Clock.Source = RCC_LPTIM1CLKSOURCE_LSE;
-  hlptim1.Init.Clock.Prescaler = LPTIM_PRESCALER_DIV128;
-  hlptim1.Init.Trigger.Source = LPTIM_TRIGSOURCE_SOFTWARE;
+  hlptim1.Init.Clock.Source = LPTIM_CLOCKSOURCE_APBCLOCK_LPOSC;
+  hlptim1.Init.Clock.Prescaler = LPTIM_PRESCALER_DIV1;
+  hlptim1.Init.Trigger.Source = LPTIM_TRIGSOURCE_1;
+  hlptim1.Init.Trigger.ActiveEdge = LPTIM_ACTIVEEDGE_RISING;
+  hlptim1.Init.Trigger.SampleTime = LPTIM_TRIGSAMPLETIME_DIRECTTRANSITION;
   hlptim1.Init.OutputPolarity = LPTIM_OUTPUTPOLARITY_HIGH;
   hlptim1.Init.UpdateMode = LPTIM_UPDATE_IMMEDIATE;
   hlptim1.Init.CounterSource = LPTIM_COUNTERSOURCE_INTERNAL;
@@ -58,26 +60,36 @@ void MX_LPTIM1_Init(void)
 
 void HAL_LPTIM_MspInit(LPTIM_HandleTypeDef* lptimHandle)
 {
-
-  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
   if(lptimHandle->Instance==LPTIM1)
   {
-  /* USER CODE BEGIN LPTIM1_MspInit 0 */
+    /* USER CODE BEGIN LPTIM1_MspInit 0 */
 
-  /* USER CODE END LPTIM1_MspInit 0 */
+    RCC_OscInitTypeDef RCC_OscInitStruct;
+    RCC_PeriphCLKInitTypeDef RCC_PeriphCLKInitStruct;
 
-  /** Initializes the peripherals clock
-  */
-    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LPTIM1;
-    PeriphClkInitStruct.Lptim1ClockSelection = RCC_LPTIM1CLKSOURCE_LSE;
-    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    /* Enable LSE clock */
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE;
+    RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
     {
       Error_Handler();
     }
 
-    /* LPTIM1 clock enable */
-    __HAL_RCC_LPTIM1_CLK_ENABLE();
+    /* Select the LSE clock as LPTIM1 peripheral clock */
+    RCC_PeriphCLKInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LPTIM1;
+    RCC_PeriphCLKInitStruct.Lptim1ClockSelection = RCC_LPTIM1CLKSOURCE_LSE;
+    HAL_RCCEx_PeriphCLKConfig(&RCC_PeriphCLKInitStruct);
 
+    /* Force the LPTIM1 Periheral Clock Reset */
+    __HAL_RCC_LPTIM1_FORCE_RESET();
+
+    /* Release the LPTIM1 Periheral Clock Reset */
+    __HAL_RCC_LPTIM1_RELEASE_RESET();
+
+    /* USER CODE END LPTIM1_MspInit 0 */
+    /* Peripheral clock enable */
+    __HAL_RCC_LPTIM1_CLK_ENABLE();
     /* LPTIM1 interrupt Init */
     HAL_NVIC_SetPriority(LPTIM1_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(LPTIM1_IRQn);
