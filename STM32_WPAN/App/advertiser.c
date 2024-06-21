@@ -9,6 +9,7 @@
 #include "rtc.h"
 #include "ble_core.h"
 #include "blesen-service.h"
+#include "lptim.h"
 
 #define INITIAL_ADV_TIMEOUT (0.5*1000*1000/CFG_TS_TICK_VAL) /** 0.5s */
 
@@ -93,7 +94,11 @@ static void Adv_Mgr(void) {
   // Activate low power wake-up timer
   uint8_t wakeup_counter = 40; // 40 is around 11 minutes
   HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
+  HAL_RTC_MspDeInit(&hrtc);
+
+  HAL_LPTIM_TimeOut_Start_IT(&hlptim1, 0, 0);
+  /**
   if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, wakeup_counter, RTC_WAKEUPCLOCK_CK_SPRE_16BITS) != HAL_OK) {
     Error_Handler();
-  }
+  } */
 }

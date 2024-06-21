@@ -21,6 +21,8 @@
 #include "adc.h"
 #include "i2c.h"
 #include "ipcc.h"
+#include "lptim.h"
+#include "memorymap.h"
 #include "rf.h"
 #include "rtc.h"
 #include "usart.h"
@@ -106,6 +108,7 @@ int main(void)
   MX_RTC_Init();
   MX_I2C1_Init();
   MX_USART1_UART_Init();
+  MX_LPTIM1_Init();
   MX_RF_Init();
   /* USER CODE BEGIN 2 */
   if (HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED)
@@ -162,7 +165,7 @@ void SystemClock_Config(void)
 
   /** Configure LSE Drive Capability
   */
-  HAL_PWR_EnableBkUpAccess();
+  //HAL_PWR_EnableBkUpAccess();
   __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
 
   /** Configure the main internal regulator output voltage
