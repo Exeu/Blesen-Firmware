@@ -49,7 +49,7 @@ else ()
     add_compile_options(-Og -g)
 endif ()
 
-include_directories(Core/Inc STM32_WPAN/App Drivers/STM32WBxx_HAL_Driver/Inc Drivers/STM32WBxx_HAL_Driver/Inc/Legacy Utilities/lpm/tiny_lpm Middlewares/ST/STM32_WPAN Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/shci Middlewares/ST/STM32_WPAN/utilities Middlewares/ST/STM32_WPAN/ble/core Middlewares/ST/STM32_WPAN/ble/core/auto Middlewares/ST/STM32_WPAN/ble/core/template Middlewares/ST/STM32_WPAN/ble/svc/Inc Middlewares/ST/STM32_WPAN/ble/svc/Src Drivers/CMSIS/Device/ST/STM32WBxx/Include Utilities/sequencer Middlewares/ST/STM32_WPAN/ble Drivers/CMSIS/Include)
+include_directories(Core/Inc STM32_WPAN/App Drivers/STM32WBxx_HAL_Driver/Inc Drivers/STM32WBxx_HAL_Driver/Inc/Legacy Utilities/lpm/tiny_lpm Utilities/sensiron/shtc3 Utilities/sensiron/sht4x Middlewares/ST/STM32_WPAN Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/shci Middlewares/ST/STM32_WPAN/utilities Middlewares/ST/STM32_WPAN/ble/core Middlewares/ST/STM32_WPAN/ble/core/auto Middlewares/ST/STM32_WPAN/ble/core/template Middlewares/ST/STM32_WPAN/ble/svc/Inc Middlewares/ST/STM32_WPAN/ble/svc/Src Drivers/CMSIS/Device/ST/STM32WBxx/Include Utilities/sequencer Middlewares/ST/STM32_WPAN/ble Drivers/CMSIS/Include)
 
 add_definitions(-DDEBUG -DUSE_HAL_DRIVER -DSTM32WB55xx)
 
