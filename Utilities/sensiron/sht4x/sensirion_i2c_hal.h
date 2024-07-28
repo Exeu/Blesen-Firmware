@@ -29,10 +29,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SENSIRION_I2C_HAL_H
-#define SENSIRION_I2C_HAL_H
+#ifndef SENSIRION_I2C_H
+#define SENSIRION_I2C_H
 
-#include "sensirion_config.h"
+#include "sensirion_arch_config.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,18 +48,18 @@ extern "C" {
  * @param bus_idx   Bus index to select
  * @returns         0 on success, an error code otherwise
  */
-int16_t sensirion_i2c_hal_select_bus(uint8_t bus_idx);
+int16_t sensirion_i2c_select_bus(uint8_t bus_idx);
 
 /**
  * Initialize all hard- and software components that are needed for the I2C
  * communication.
  */
-void sensirion_i2c_hal_init(void);
+void sensirion_i2c_init(void);
 
 /**
- * Release all resources initialized by sensirion_i2c_hal_init().
+ * Release all resources initialized by sensirion_i2c_init().
  */
-void sensirion_i2c_hal_free(void);
+void sensirion_i2c_release(void);
 
 /**
  * Execute one read transaction on the I2C bus, reading a given number of bytes.
@@ -71,7 +71,7 @@ void sensirion_i2c_hal_free(void);
  * @param count   number of bytes to read from I2C and store in the buffer
  * @returns 0 on success, error code otherwise
  */
-int8_t sensirion_i2c_hal_read(uint8_t address, uint8_t* data, uint8_t count);
+int8_t sensirion_i2c_read(uint8_t address, uint8_t* data, uint16_t count);
 
 /**
  * Execute one write transaction on the I2C bus, sending a given number of
@@ -84,8 +84,8 @@ int8_t sensirion_i2c_hal_read(uint8_t address, uint8_t* data, uint8_t count);
  * @param count   number of bytes to read from the buffer and send over I2C
  * @returns 0 on success, error code otherwise
  */
-int8_t sensirion_i2c_hal_write(uint8_t address, const uint8_t* data,
-                               uint8_t count);
+int8_t sensirion_i2c_write(uint8_t address, const uint8_t* data,
+                           uint16_t count);
 
 /**
  * Sleep for a given number of microseconds. The function should delay the
@@ -97,16 +97,16 @@ int8_t sensirion_i2c_hal_write(uint8_t address, const uint8_t* data,
  * When using software i2c:
  * The precision needed depends on the desired i2c frequency, i.e. should be
  * exact to about half a clock cycle (defined in
- * `SENSIRION_I2C_CLOCK_PERIOD_USEC` in `sensirion_sw_i2c_gpio.h`).
+ * `SENSIRION_I2C_CLOCK_PERIOD_USEC` in `sensirion_arch_config.h`).
  *
  * Example with 400kHz requires a precision of 1 / (2 * 400kHz) == 1.25usec.
  *
  * @param useconds the sleep time in microseconds
  */
-void sensirion_i2c_hal_sleep_usec(uint32_t useconds);
+void sensirion_sleep_usec(uint32_t useconds);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* SENSIRION_I2C_HAL_H */
+#endif /* SENSIRION_I2C_H */

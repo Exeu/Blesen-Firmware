@@ -27,8 +27,8 @@
 #include "usart.h"
 #include "gpio.h"
 #include "sensirion_i2c_hal.h"
-#include "sht4x_i2c.h"
 #include "sensirion_common.h"
+#include "sht4x.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -108,8 +108,6 @@ int main(void)
   MX_ADC1_Init();
   MX_RTC_Init();
   MX_I2C1_Init();
-  sensirion_i2c_hal_init();
-  sht4x_init(SHT40_I2C_ADDR_44);
   //MX_USART1_UART_Init();
   MX_RF_Init();
   /* USER CODE BEGIN 2 */
@@ -117,16 +115,15 @@ int main(void)
       != HAL_OK) {
     return HAL_ERROR;
   }
+  sensirion_i2c_init();
 
-  int16_t error = NO_ERROR;
-  sht4x_soft_reset();
-  sensirion_hal_sleep_us(10000);
-  uint32_t serial_number = 0;
-  error = sht4x_serial_number(&serial_number);
-  if (error != NO_ERROR) {
-
+  /* Busy loop for initialization, because the main loop does not work without
+   * a sensor.
+   */
+  while (sht4x_probe() != STATUS_OK) {
+    printf("SHT sensor probing failed\n");
+    sensirion_sleep_usec(1000000); /* sleep 1s */
   }
-  sht4x_soft_reset();
 
   /* Init code for STM32_WPAN */
   uint32_t reset_flags = __HAL_RCC_GET_FLAG(RCC_FLAG_PINRST);
