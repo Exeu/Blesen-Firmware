@@ -107,7 +107,7 @@ int main(void)
   MX_GPIO_Init();
   MX_ADC1_Init();
   MX_RTC_Init();
-  //MX_I2C1_Init();
+  MX_I2C1_Init();
   sensirion_i2c_hal_init();
   sht4x_init(SHT40_I2C_ADDR_44);
   //MX_USART1_UART_Init();
@@ -118,37 +118,16 @@ int main(void)
     return HAL_ERROR;
   }
 
-  /*
   int16_t error = NO_ERROR;
-
-
   sht4x_soft_reset();
   sensirion_hal_sleep_us(10000);
   uint32_t serial_number = 0;
   error = sht4x_serial_number(&serial_number);
   if (error != NO_ERROR) {
-    printf("error executing serial_number(): %i\n", error);
-    //return error;
-  }
-  printf("serial_number: %u\n", serial_number);
 
-  int32_t temperature_milli_degC = 0;
-  int32_t humidity_milli_RH = 0;
-  uint16_t repetition = 0;
-  for (repetition = 0; repetition < 2; repetition++) {
-    sensirion_hal_sleep_us(20000);
-    error = sht4x_measure_high_precision(&temperature_milli_degC,
-                                           &humidity_milli_RH);
-    if (error != NO_ERROR) {
-      printf("error executing measure_lowest_precision_ticks(): %i\n",
-             error);
-      continue;
-    }
-    printf("Temperature milli °C: %li ", temperature_milli_degC);
-    printf("Humidity milli percent RH: %i\n", humidity_milli_RH);
   }
   sht4x_soft_reset();
-   */
+
   /* Init code for STM32_WPAN */
   uint32_t reset_flags = __HAL_RCC_GET_FLAG(RCC_FLAG_PINRST);
   if (reset_flags)

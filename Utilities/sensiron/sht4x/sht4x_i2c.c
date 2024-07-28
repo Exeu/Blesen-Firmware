@@ -85,13 +85,14 @@ int16_t sht4x_measure_high_precision(int32_t* temperature, int32_t* humidity) {
     if (local_error != NO_ERROR) {
         return local_error;
     }
-    *temperature = (float)(temperature_ticks) / 65535.0f * 175.0f - 45.0f;                   /* convert raw temperature */
-    *humidity = (((float)(humidity_ticks) / 65535.0f) * 125.0f - 6.0f);
 
-
-    *temperature = convert_ticks_to_celsius(temperature_ticks);
+    *temperature = temperature_ticks * 17500 / 65535 - 4500;
     *humidity = convert_ticks_to_percent_rh(humidity_ticks);
 
+    /*
+    *temperature = convert_ticks_to_celsius(temperature_ticks);
+    *humidity = convert_ticks_to_percent_rh(humidity_ticks);
+    */
     return local_error;
 }
 

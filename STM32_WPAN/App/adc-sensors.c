@@ -37,8 +37,13 @@ void read_sensors(sensor_data_t * sen_data) {
 }
 
 void read_i2c_sensor(sensor_data_t * sen_data) {
+  int32_t temperature_milli_degC = 0;
+  int32_t humidity_milli_RH = 0;
+
+  sht4x_measure_high_precision(&temperature_milli_degC,&humidity_milli_RH);
+  sen_data->Temperature = temperature_milli_degC;
+  sen_data->Humidity = humidity_milli_RH / 1000;
   sht4x_soft_reset();
-  HAL_Delay(2);
 }
 
 static float set_battery_percent(float v) {
