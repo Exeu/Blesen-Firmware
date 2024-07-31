@@ -17,7 +17,6 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include <stdbool.h>
 #include "main.h"
 #include "adc.h"
 #include "i2c.h"
@@ -26,8 +25,6 @@
 #include "rtc.h"
 #include "usart.h"
 #include "gpio.h"
-#include "sensirion_i2c_hal.h"
-#include "sensirion_common.h"
 #include "sht4x.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -42,7 +39,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define sensirion_hal_sleep_us sensirion_i2c_hal_sleep_usec
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -108,14 +105,15 @@ int main(void)
   MX_ADC1_Init();
   MX_RTC_Init();
   MX_I2C1_Init();
+
   //MX_USART1_UART_Init();
+
   MX_RF_Init();
   /* USER CODE BEGIN 2 */
   if (HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED)
       != HAL_OK) {
     return HAL_ERROR;
   }
-  sensirion_i2c_init();
 
   /* Busy loop for initialization, because the main loop does not work without
    * a sensor.
@@ -125,6 +123,7 @@ int main(void)
     sensirion_sleep_usec(1000000); /* sleep 1s */
   }
 
+  //sht4x_enable_low_power_mode(true);
   /* Init code for STM32_WPAN */
   uint32_t reset_flags = __HAL_RCC_GET_FLAG(RCC_FLAG_PINRST);
   if (reset_flags)

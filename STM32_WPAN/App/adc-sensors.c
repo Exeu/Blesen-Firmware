@@ -1,8 +1,6 @@
 #include "adc-sensors.h"
 #include "app_conf.h"
 #include "adc.h"
-#include "shtc3.h"
-#include "i2c.h"
 #include "sht4x.h"
 
 typedef struct {
@@ -41,7 +39,7 @@ void read_i2c_sensor(sensor_data_t * sen_data) {
   uint32_t humidity;
   sht4x_measure_blocking_read(&temperature, &humidity);
   sen_data->Temperature = temperature / 10;
-  sen_data->Humidity = humidity / 1000;
+  sen_data->Humidity = (int32_t) humidity;
 }
 
 static float set_battery_percent(float v) {
