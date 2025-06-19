@@ -9,14 +9,12 @@
 #include "ble_gatt_aci.h"
 #include "ble_hal_aci.h"
 #include "ble_hci_le.h"
-#include "ble_conf.h"
 #include "otp.h"
 #include "ble_core.h"
 #include "svc_ctl.h"
 #include "shci.h"
 #include "blesen-service.h"
 #include "advertiser.h"
-#include "advertiser-extended.h"
 
 static void Ble_Tl_Init(void);
 static void BLE_StatusNot(HCI_TL_CmdStatus_t Status);
