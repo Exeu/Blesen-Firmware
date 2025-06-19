@@ -1,8 +1,7 @@
 #include "adc-sensors.h"
 #include "app_conf.h"
 #include "adc.h"
-#include "shtc3.h"
-#include "i2c.h"
+#include "sht4x.h"
 
 typedef struct {
   // High (h) and low (p) voltage (v) and % (p) points.
@@ -36,10 +35,11 @@ void read_sensors(sensor_data_t * sen_data) {
 }
 
 void read_i2c_sensor(sensor_data_t * sen_data) {
-  shtc3_wakeup(&hi2c1);
-  HAL_Delay(12);
-  shtc3_perform_measurements_low_power(&hi2c1, &sen_data->Temperature, &sen_data->Humidity);
-  shtc3_sleep(&hi2c1);
+  int32_t temperature;
+  uint32_t humidity;
+  sht4x_measure_blocking_read(&temperature, &humidity);
+  sen_data->Temperature = temperature / 10;
+  sen_data->Humidity = (int32_t) humidity;
 }
 
 static float set_battery_percent(float v) {

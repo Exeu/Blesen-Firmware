@@ -17,7 +17,6 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include <stdbool.h>
 #include "main.h"
 #include "adc.h"
 #include "i2c.h"
@@ -26,7 +25,7 @@
 #include "rtc.h"
 #include "usart.h"
 #include "gpio.h"
-#include "shtc3.h"
+#include "sht4x.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -106,7 +105,9 @@ int main(void)
   MX_ADC1_Init();
   MX_RTC_Init();
   MX_I2C1_Init();
+
   //MX_USART1_UART_Init();
+
   MX_RF_Init();
   /* USER CODE BEGIN 2 */
   if (HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED)
@@ -114,16 +115,15 @@ int main(void)
     return HAL_ERROR;
   }
 
-  shtc3_wakeup(&hi2c1);
-  HAL_Delay(2);
-  uint16_t id = shtc3_read_id(&hi2c1);
-  if (id == 0) {
-    while(true) {
-      HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
-      HAL_Delay(200);
-    }
+  /* Busy loop for initialization, because the main loop does not work without
+   * a sensor.
+   */
+  while (sht4x_probe() != STATUS_OK) {
+    printf("SHT sensor probing failed\n");
+    sensirion_sleep_usec(1000000); /* sleep 1s */
   }
-  shtc3_sleep(&hi2c1);
+
+  //sht4x_enable_low_power_mode(true);
   /* Init code for STM32_WPAN */
   uint32_t reset_flags = __HAL_RCC_GET_FLAG(RCC_FLAG_PINRST);
   if (reset_flags)
