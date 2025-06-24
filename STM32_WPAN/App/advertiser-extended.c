@@ -25,11 +25,13 @@ typedef struct
   char username[30];
 } Adv_Set_Param_t;
 
+static uint8_t ADV_EXT_Build_data(Adv_Set_Param_t *adv_param);
 
 Adv_Set_Param_t adv_set_param[8];
 
 void Adv_ext_Start() {
   tBleStatus status = BLE_STATUS_INVALID_PARAMS;
+  uint8_t handle = 0;
 
   int i = 0;
   adv_set_param[i].enable = 1;
@@ -49,9 +51,12 @@ void Adv_ext_Start() {
   adv_set_param[i].adv_set.Duration = 0;
   adv_set_param[i].adv_set.Max_Extended_Advertising_Events = 0;
 
-  status = aci_gap_adv_set_configuration(0x00,
-    0,
-    0x00,
+  ADV_EXT_Build_data(&adv_set_param[i]);
+
+  status = aci_gap_adv_set_configuration(
+    0x01,
+    handle,
+    0x0001,
     300,
     400,
     ADV_CH_37 | ADV_CH_38 | ADV_CH_39,
@@ -60,8 +65,8 @@ void Adv_ext_Start() {
     NULL,
     NO_WHITE_LIST_USE,
     0x00,
-    0x00,
-    0x00,
+    0x01,
+    0x01,
     1,
     0x00);
 

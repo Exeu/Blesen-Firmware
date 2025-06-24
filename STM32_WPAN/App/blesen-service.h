@@ -7,7 +7,7 @@
 
 #include "app_common.h"
 
-#define SERVICE_DATA_LENGTH 21
+#define SERVICE_DATA_LENGTH 100
 
 void populate_service_data();
 extern uint8_t service_data[SERVICE_DATA_LENGTH];

@@ -1,5 +1,6 @@
 #include "app_ble.h"
 
+#include "advertiser-extended.h"
 #include "app_conf.h"
 #include "hci_tl.h"
 #include "stm32_seq.h"
@@ -115,10 +116,10 @@ void APP_BLE_Init(void) {
 
   populate_service_data();
 
-  Adv_Init();
-  Adv_Start(service_data, sizeof(service_data));
+  //Adv_Init();
+  //Adv_Start(service_data, sizeof(service_data));
 
-//  Adv_ext_Start();
+  Adv_ext_Start();
 }
 
 static void Ble_Hci_Gap_Gatt_Init(void) {

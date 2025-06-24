@@ -42,7 +42,15 @@ uint8_t service_data[SERVICE_DATA_LENGTH] = {
 
     // Packet-Id
     0x00,
-    1
+    1,
+
+    0x07,
+    0x3E,
+    0x1D,
+
+    0x3F,
+    0x02,
+    0x0C
 };
 
 void populate_service_data() {
