@@ -46,33 +46,33 @@ uint8_t service_data[SERVICE_DATA_LENGTH] = {
 };
 
 void populate_service_data() {
-  sensor_data_t sensor_data;
-  read_sensors(&sensor_data);
-  read_i2c_sensor(&sensor_data);
+    sensor_data_t sensor_data;
+    read_sensors(&sensor_data);
+    read_i2c_sensor(&sensor_data);
 
-  uint32_t packet_id = HAL_RTCEx_BKUPRead(&hrtc, 1);
-  if (packet_id >= 255) {
-    packet_id = 0;
-  }
+    uint32_t packet_id = HAL_RTCEx_BKUPRead(&hrtc, 1);
+    if (packet_id >= 255) {
+        packet_id = 0;
+    }
 
-  packet_id +=1;
-  HAL_RTCEx_BKUPWrite(&hrtc, 1, packet_id);
+    packet_id += 1;
+    HAL_RTCEx_BKUPWrite(&hrtc, 1, packet_id);
 
-  uint16_t battery_voltage = (uint16_t) sensor_data.VRefInt;
-  uint32_t lux = (uint32_t) sensor_data.Brightness * 100;
+    uint16_t battery_voltage = (uint16_t) sensor_data.VRefInt;
+    uint32_t lux = (uint32_t) sensor_data.Brightness * 100;
 
-  service_data[6] = sensor_data.Temperature & 0xff;
-  service_data[7] = sensor_data.Temperature >> 8;
+    service_data[6] = sensor_data.Temperature & 0xff;
+    service_data[7] = sensor_data.Temperature >> 8;
 
-  service_data[9] = sensor_data.Humidity;
+    service_data[9] = sensor_data.Humidity;
 
-  service_data[11] = lux & 0xff;
-  service_data[12] = lux >> 8;
-  service_data[13] = lux >> 16;
+    service_data[11] = lux & 0xff;
+    service_data[12] = lux >> 8;
+    service_data[13] = lux >> 16;
 
-  service_data[15] = battery_voltage & 0xff;
-  service_data[16] = battery_voltage >> 8;
+    service_data[15] = battery_voltage & 0xff;
+    service_data[16] = battery_voltage >> 8;
 
-  service_data[18] = sensor_data.BatteryPercent;
-  service_data[20] = packet_id;
+    service_data[18] = sensor_data.BatteryPercent;
+    service_data[20] = packet_id;
 }

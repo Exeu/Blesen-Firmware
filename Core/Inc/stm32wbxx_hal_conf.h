@@ -99,7 +99,7 @@
 #endif /* HSE_VALUE */
 
 #if !defined  (HSE_STARTUP_TIMEOUT)
-  #define HSE_STARTUP_TIMEOUT    ((uint32_t)100)   /*!< Time out for HSE start up, in ms */
+#define HSE_STARTUP_TIMEOUT    ((uint32_t)100)   /*!< Time out for HSE start up, in ms */
 #endif /* HSE_STARTUP_TIMEOUT */
 
 /**
@@ -107,7 +107,7 @@
   *        This value is the default MSI range value after Reset.
   */
 #if !defined  (MSI_VALUE)
-  #define MSI_VALUE    ((uint32_t)4000000) /*!< Value of the Internal oscillator in Hz*/
+#define MSI_VALUE    ((uint32_t)4000000) /*!< Value of the Internal oscillator in Hz*/
 #endif /* MSI_VALUE */
 
 /**
@@ -123,7 +123,7 @@
   * @brief Internal Low Speed oscillator (LSI1) value.
   */
 #if !defined  (LSI1_VALUE)
- #define LSI1_VALUE  ((uint32_t)32000)       /*!< LSI1 Typical Value in Hz*/
+#define LSI1_VALUE  ((uint32_t)32000)       /*!< LSI1 Typical Value in Hz*/
 #endif /* LSI1_VALUE */                      /*!< Value of the Internal Low Speed oscillator in Hz
                                              The real value may vary depending on the variations
                                              in voltage and temperature.*/
@@ -131,7 +131,7 @@
   * @brief Internal Low Speed oscillator (LSI2) value.
   */
 #if !defined  (LSI2_VALUE)
- #define LSI2_VALUE  ((uint32_t)32000)       /*!< LSI2 Typical Value in Hz*/
+#define LSI2_VALUE  ((uint32_t)32000)       /*!< LSI2 Typical Value in Hz*/
 #endif /* LSI2_VALUE */                      /*!< Value of the Internal Low Speed oscillator in Hz
                                              The real value may vary depending on the variations
                                              in voltage and temperature.*/
@@ -149,7 +149,7 @@
   *        This value is the default HSI48 range value after Reset.
   */
 #if !defined (HSI48_VALUE)
-  #define HSI48_VALUE    ((uint32_t)48000000) /*!< Value of the Internal oscillator in Hz*/
+#define HSI48_VALUE    ((uint32_t)48000000) /*!< Value of the Internal oscillator in Hz*/
 #endif /* HSI48_VALUE */
 
 #if !defined  (LSE_STARTUP_TIMEOUT)
@@ -162,7 +162,7 @@
   *        frequency.
   */
 #if !defined (EXTERNAL_SAI1_CLOCK_VALUE)
-  #define EXTERNAL_SAI1_CLOCK_VALUE    ((uint32_t)2097000) /*!< Value of the SAI1 External clock source in Hz*/
+#define EXTERNAL_SAI1_CLOCK_VALUE    ((uint32_t)2097000) /*!< Value of the SAI1 External clock source in Hz*/
 #endif /* EXTERNAL_SAI1_CLOCK_VALUE */
 
 /* Tip: To avoid modifying this file each time you need to use different HSE,
@@ -201,11 +201,11 @@
   * @brief Include module's header file
   */
 #ifdef HAL_DMA_MODULE_ENABLED
-  #include "stm32wbxx_hal_dma.h"
+#include "stm32wbxx_hal_dma.h"
 #endif /* HAL_DMA_MODULE_ENABLED */
 
 #ifdef HAL_ADC_MODULE_ENABLED
-  #include "stm32wbxx_hal_adc.h"
+#include "stm32wbxx_hal_adc.h"
 #endif /* HAL_ADC_MODULE_ENABLED */
 
 #ifdef HAL_COMP_MODULE_ENABLED
@@ -213,7 +213,7 @@
 #endif /* HAL_COMP_MODULE_ENABLED */
 
 #ifdef HAL_CORTEX_MODULE_ENABLED
-  #include "stm32wbxx_hal_cortex.h"
+#include "stm32wbxx_hal_cortex.h"
 #endif /* HAL_CORTEX_MODULE_ENABLED */
 
 #ifdef HAL_CRC_MODULE_ENABLED
@@ -225,27 +225,27 @@
 #endif /* HAL_CRYP_MODULE_ENABLED */
 
 #ifdef HAL_EXTI_MODULE_ENABLED
-  #include "stm32wbxx_hal_exti.h"
+#include "stm32wbxx_hal_exti.h"
 #endif /* HAL_EXTI_MODULE_ENABLED */
 
 #ifdef HAL_FLASH_MODULE_ENABLED
-  #include "stm32wbxx_hal_flash.h"
+#include "stm32wbxx_hal_flash.h"
 #endif /* HAL_FLASH_MODULE_ENABLED */
 
 #ifdef HAL_GPIO_MODULE_ENABLED
-  #include "stm32wbxx_hal_gpio.h"
+#include "stm32wbxx_hal_gpio.h"
 #endif /* HAL_GPIO_MODULE_ENABLED */
 
 #ifdef HAL_HSEM_MODULE_ENABLED
-  #include "stm32wbxx_hal_hsem.h"
+#include "stm32wbxx_hal_hsem.h"
 #endif /* HAL_HSEM_MODULE_ENABLED */
 
 #ifdef HAL_I2C_MODULE_ENABLED
- #include "stm32wbxx_hal_i2c.h"
+#include "stm32wbxx_hal_i2c.h"
 #endif /* HAL_I2C_MODULE_ENABLED */
 
 #ifdef HAL_IPCC_MODULE_ENABLED
- #include "stm32wbxx_hal_ipcc.h"
+#include "stm32wbxx_hal_ipcc.h"
 #endif /* HAL_IPCC_MODULE_ENABLED */
 
 #ifdef HAL_IRDA_MODULE_ENABLED
@@ -273,7 +273,7 @@
 #endif /* HAL_PKA_MODULE_ENABLED */
 
 #ifdef HAL_PWR_MODULE_ENABLED
- #include "stm32wbxx_hal_pwr.h"
+#include "stm32wbxx_hal_pwr.h"
 #endif /* HAL_PWR_MODULE_ENABLED */
 
 #ifdef HAL_QSPI_MODULE_ENABLED
@@ -281,7 +281,7 @@
 #endif /* HAL_QSPI_MODULE_ENABLED */
 
 #ifdef HAL_RCC_MODULE_ENABLED
-  #include "stm32wbxx_hal_rcc.h"
+#include "stm32wbxx_hal_rcc.h"
 #endif /* HAL_RCC_MODULE_ENABLED */
 
 #ifdef HAL_RNG_MODULE_ENABLED
@@ -289,7 +289,7 @@
 #endif /* HAL_RNG_MODULE_ENABLED */
 
 #ifdef HAL_RTC_MODULE_ENABLED
- #include "stm32wbxx_hal_rtc.h"
+#include "stm32wbxx_hal_rtc.h"
 #endif /* HAL_RTC_MODULE_ENABLED */
 
 #ifdef HAL_SAI_MODULE_ENABLED
@@ -317,7 +317,7 @@
 #endif /* HAL_TSC_MODULE_ENABLED */
 
 #ifdef HAL_UART_MODULE_ENABLED
- #include "stm32wbxx_hal_uart.h"
+#include "stm32wbxx_hal_uart.h"
 #endif /* HAL_UART_MODULE_ENABLED */
 
 #ifdef HAL_USART_MODULE_ENABLED
@@ -342,7 +342,7 @@
 /* Exported functions ------------------------------------------------------- */
   void assert_failed(uint8_t* file, uint32_t line);
 #else
-  #define assert_param(expr) ((void)0U)
+#define assert_param(expr) ((void)0U)
 #endif /* USE_FULL_ASSERT */
 
 #ifdef __cplusplus

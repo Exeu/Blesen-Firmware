@@ -150,10 +150,10 @@
    */
 #define CFG_HW_TS_RTC_HANDLER_MAX_DELAY  ( 10 * (LSI_VALUE/1000) )
 
-  /**
-   * Interrupt ID in the NVIC of the RTC Wakeup interrupt handler
-   * It shall be type of IRQn_Type
-   */
+/**
+ * Interrupt ID in the NVIC of the RTC Wakeup interrupt handler
+ * It shall be type of IRQn_Type
+ */
 #define CFG_HW_TS_RTC_WAKEUP_HANDLER_ID  RTC_WKUP_IRQn
 
 /******************************************************************************

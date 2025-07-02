@@ -27,67 +27,57 @@
 IPCC_HandleTypeDef hipcc;
 
 /* IPCC init function */
-void MX_IPCC_Init(void)
-{
+void MX_IPCC_Init(void) {
+    /* USER CODE BEGIN IPCC_Init 0 */
 
-  /* USER CODE BEGIN IPCC_Init 0 */
+    /* USER CODE END IPCC_Init 0 */
 
-  /* USER CODE END IPCC_Init 0 */
+    /* USER CODE BEGIN IPCC_Init 1 */
 
-  /* USER CODE BEGIN IPCC_Init 1 */
+    /* USER CODE END IPCC_Init 1 */
+    hipcc.Instance = IPCC;
+    if (HAL_IPCC_Init(&hipcc) != HAL_OK) {
+        Error_Handler();
+    }
+    /* USER CODE BEGIN IPCC_Init 2 */
 
-  /* USER CODE END IPCC_Init 1 */
-  hipcc.Instance = IPCC;
-  if (HAL_IPCC_Init(&hipcc) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN IPCC_Init 2 */
-
-  /* USER CODE END IPCC_Init 2 */
-
+    /* USER CODE END IPCC_Init 2 */
 }
 
-void HAL_IPCC_MspInit(IPCC_HandleTypeDef* ipccHandle)
-{
+void HAL_IPCC_MspInit(IPCC_HandleTypeDef *ipccHandle) {
+    if (ipccHandle->Instance == IPCC) {
+        /* USER CODE BEGIN IPCC_MspInit 0 */
 
-  if(ipccHandle->Instance==IPCC)
-  {
-  /* USER CODE BEGIN IPCC_MspInit 0 */
+        /* USER CODE END IPCC_MspInit 0 */
+        /* IPCC clock enable */
+        __HAL_RCC_IPCC_CLK_ENABLE();
 
-  /* USER CODE END IPCC_MspInit 0 */
-    /* IPCC clock enable */
-    __HAL_RCC_IPCC_CLK_ENABLE();
+        /* IPCC interrupt Init */
+        HAL_NVIC_SetPriority(IPCC_C1_RX_IRQn, 0, 0);
+        HAL_NVIC_EnableIRQ(IPCC_C1_RX_IRQn);
+        HAL_NVIC_SetPriority(IPCC_C1_TX_IRQn, 0, 0);
+        HAL_NVIC_EnableIRQ(IPCC_C1_TX_IRQn);
+        /* USER CODE BEGIN IPCC_MspInit 1 */
 
-    /* IPCC interrupt Init */
-    HAL_NVIC_SetPriority(IPCC_C1_RX_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(IPCC_C1_RX_IRQn);
-    HAL_NVIC_SetPriority(IPCC_C1_TX_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(IPCC_C1_TX_IRQn);
-  /* USER CODE BEGIN IPCC_MspInit 1 */
-
-  /* USER CODE END IPCC_MspInit 1 */
-  }
+        /* USER CODE END IPCC_MspInit 1 */
+    }
 }
 
-void HAL_IPCC_MspDeInit(IPCC_HandleTypeDef* ipccHandle)
-{
+void HAL_IPCC_MspDeInit(IPCC_HandleTypeDef *ipccHandle) {
+    if (ipccHandle->Instance == IPCC) {
+        /* USER CODE BEGIN IPCC_MspDeInit 0 */
 
-  if(ipccHandle->Instance==IPCC)
-  {
-  /* USER CODE BEGIN IPCC_MspDeInit 0 */
+        /* USER CODE END IPCC_MspDeInit 0 */
+        /* Peripheral clock disable */
+        __HAL_RCC_IPCC_CLK_DISABLE();
 
-  /* USER CODE END IPCC_MspDeInit 0 */
-    /* Peripheral clock disable */
-    __HAL_RCC_IPCC_CLK_DISABLE();
+        /* IPCC interrupt Deinit */
+        HAL_NVIC_DisableIRQ(IPCC_C1_RX_IRQn);
+        HAL_NVIC_DisableIRQ(IPCC_C1_TX_IRQn);
+        /* USER CODE BEGIN IPCC_MspDeInit 1 */
 
-    /* IPCC interrupt Deinit */
-    HAL_NVIC_DisableIRQ(IPCC_C1_RX_IRQn);
-    HAL_NVIC_DisableIRQ(IPCC_C1_TX_IRQn);
-  /* USER CODE BEGIN IPCC_MspDeInit 1 */
-
-  /* USER CODE END IPCC_MspDeInit 1 */
-  }
+        /* USER CODE END IPCC_MspDeInit 1 */
+    }
 }
 
 /* USER CODE BEGIN 1 */

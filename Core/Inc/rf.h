@@ -47,4 +47,3 @@ void MX_RF_Init(void);
 #endif
 
 #endif /* __RF_H__ */
-

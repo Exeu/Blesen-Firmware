@@ -33,13 +33,14 @@ extern "C" {
   * @param none
   * @retval none
   */
-void PWR_EnterOffMode( void );
+void PWR_EnterOffMode(void);
+
 /**
   * @brief Exits Low Power Off Mode
   * @param none
   * @retval none
   */
-void PWR_ExitOffMode( void );
+void PWR_ExitOffMode(void);
 
 /**
   * @brief Enters Low Power Stop Mode
@@ -47,14 +48,15 @@ void PWR_ExitOffMode( void );
   * @param none
   * @retval none
   */
-void PWR_EnterStopMode( void );
+void PWR_EnterStopMode(void);
+
 /**
   * @brief Exits Low Power Stop Mode
   * @note Enable the pll at 32MHz
   * @param none
   * @retval none
   */
-void PWR_ExitStopMode( void );
+void PWR_ExitStopMode(void);
 
 /**
   * @brief Enters Low Power Sleep Mode
@@ -62,7 +64,7 @@ void PWR_ExitStopMode( void );
   * @param none
   * @retval none
   */
-void PWR_EnterSleepMode( void );
+void PWR_EnterSleepMode(void);
 
 /**
   * @brief Exits Low Power Sleep Mode
@@ -70,11 +72,10 @@ void PWR_EnterSleepMode( void );
   * @param none
   * @retval none
   */
-void PWR_ExitSleepMode( void );
+void PWR_ExitSleepMode(void);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /*STM32_LPM_IF_H */
-

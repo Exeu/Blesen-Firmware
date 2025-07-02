@@ -49,4 +49,3 @@ void MX_IPCC_Init(void);
 #endif
 
 #endif /* __IPCC_H__ */
-
