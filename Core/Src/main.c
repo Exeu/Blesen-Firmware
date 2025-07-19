@@ -76,7 +76,14 @@ void PeriphCommonClock_Config(void);
 int main(void) {
     /* USER CODE BEGIN 1 */
 
-    /* USER CODE END 1 */
+    /*
+     * This snippet is used to reset the device later on if we have a second user button
+        *(uint32_t*)SRAM1_BASE = 0xFF0701; // 0xFF0701 is the reset code
+        NVIC_SystemReset(); // This will reset the device
+    */
+
+
+
 
     /* MCU Configuration--------------------------------------------------------*/
 
