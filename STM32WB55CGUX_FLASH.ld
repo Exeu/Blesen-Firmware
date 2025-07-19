@@ -1,28 +1,23 @@
-/*
-******************************************************************************
+/**
+*****************************************************************************
 **
-**  File        : LinkerScript.ld
+**  File        : stm32wb55xx_flash_cm4.ld
 **
-**  Author      : STM32CubeIDE
+**  Abstract    : STM32CubeIDE Minimal System calls file
 **
-**  Abstract    : Linker script for STM32WB55xG Device
-**                      1024Kbytes FLASH
-**                      256Kbytes RAM
+** 		          For more information about which c-functions
+**                need which of these lowlevel functions
+**                please consult the Newlib libc-manual
 **
-**                Set heap size, stack size and stack location according
-**                to application requirements.
+**  Environment : STM32CubeIDE for MCU
 **
-**                Set memory bank area and size if external memory is used.
-**
-**  Target      : STMicroelectronics STM32
-**
-**  Distribution: The file is distributed as is without any warranty
+**  Distribution: The file is distributed as is, without any warranty
 **                of any kind.
 **
 *****************************************************************************
 ** @attention
 **
-** Copyright (c) 2024 STMicroelectronics.
+** Copyright (c) 2019 STMicroelectronics.
 ** All rights reserved.
 **
 ** This software is licensed under terms that can be found in the LICENSE file
@@ -36,16 +31,16 @@
 ENTRY(Reset_Handler)
 
 /* Highest address of the user mode stack */
-_estack = ORIGIN(RAM) + LENGTH(RAM);    /* end of RAM */
+_estack = 0x20030000;    /* end of RAM */
 /* Generate a link error if heap and stack don't fit into RAM */
-_Min_Heap_Size = 0x200;  /* required amount of heap  */
-_Min_Stack_Size = 0x400; /* required amount of stack */
+_Min_Heap_Size = 0x400 ;      /* required amount of heap  */
+_Min_Stack_Size = 0x1000 ;   /* required amount of stack */
 
 /* Specify the memory areas */
 MEMORY
 {
-FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 512K
-RAM (xrw)                 : ORIGIN = 0x20000008, LENGTH = 0x2FFF8
+FLASH (rx)                 : ORIGIN = 0x08007000, LENGTH = 484k
+RAM1 (xrw)                 : ORIGIN = 0x20000008, LENGTH = 0x2FFF8
 RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 }
 
@@ -60,6 +55,11 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
+ .ota_region 0x08007140:
+  {
+	KEEP(*(TAG_OTA_START))
+	. = ALIGN(4);
+  } >FLASH
   /* The program code and other data goes into FLASH */
   .text :
   {
@@ -118,6 +118,12 @@ SECTIONS
     PROVIDE_HIDDEN (__fini_array_end = .);
   } >FLASH
 
+ .ota_region_end :
+  {
+	. = ALIGN(4);
+	KEEP(*(TAG_OTA_END))
+	. = ALIGN(4);
+  } >FLASH
   /* used by the startup to initialize data */
   _sidata = LOADADDR(.data);
 
@@ -128,12 +134,11 @@ SECTIONS
     _sdata = .;        /* create a global symbol at data start */
     *(.data)           /* .data sections */
     *(.data*)          /* .data* sections */
-    *(.RamFunc)        /* .RamFunc sections */
-    *(.RamFunc*)       /* .RamFunc* sections */
 
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
-  } >RAM AT> FLASH
+  } >RAM1 AT> FLASH
+
 
   /* Uninitialized data section */
   . = ALIGN(4);
@@ -149,7 +154,7 @@ SECTIONS
     . = ALIGN(4);
     _ebss = .;         /* define a global symbol at bss end */
     __bss_end__ = _ebss;
-  } >RAM
+  } >RAM1
 
   /* User_heap_stack section, used to check that there is enough RAM left */
   ._user_heap_stack :
@@ -160,7 +165,9 @@ SECTIONS
     . = . + _Min_Heap_Size;
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
-  } >RAM
+  } >RAM1
+
+
 
   /* Remove information from the standard libraries */
   /DISCARD/ :
@@ -173,13 +180,6 @@ SECTIONS
   .ARM.attributes 0       : { *(.ARM.attributes) }
    MAPPING_TABLE (NOLOAD) : { *(MAPPING_TABLE) } >RAM_SHARED
    MB_MEM1 (NOLOAD)       : { *(MB_MEM1) } >RAM_SHARED
-
-   /* used by the startup to initialize .MB_MEM2 data */
-  _siMB_MEM2 = LOADADDR(.MB_MEM2);
-  .MB_MEM2 :
-  {
-    _sMB_MEM2 = . ;
-    *(MB_MEM2) ;
-    _eMB_MEM2 = . ;
-  } >RAM_SHARED AT> FLASH
+   MB_MEM2 (NOLOAD)       : { _sMB_MEM2 = . ; *(MB_MEM2) ; _eMB_MEM2 = . ; } >RAM_SHARED
+   TAG_OTA_END(NOLOAD)    : { KEEP (*(TAG_OTA_END)) } >FLASH
 }

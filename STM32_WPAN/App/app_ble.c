@@ -29,6 +29,14 @@ static void Ble_Hci_Gap_Gatt_Init(void);
 #define BD_ADDR_SIZE_LOCAL  6
 PLACE_IN_SECTION("MB_MEM1") ALIGN(4) static TL_CmdPacket_t BleCmdBuffer;
 
+/**
+ * These are the two tags used to manage a power failure during OTA
+ * The MagicKeywordAdress shall be mapped @0x140 from start of the binary image
+ * The MagicKeywordvalue is checked in the ble_ota application
+ */
+PLACE_IN_SECTION("TAG_OTA_END") const uint32_t MagicKeywordValue = 0x94448A29 ;
+PLACE_IN_SECTION("TAG_OTA_START") const uint32_t MagicKeywordAddress = (uint32_t)&MagicKeywordValue;
+
 #define ENABLE_ALTERNATE_LUX_FORMULA    1
 
 static const uint8_t a_MBdAddr[BD_ADDR_SIZE_LOCAL] =
