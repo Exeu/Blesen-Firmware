@@ -66,6 +66,7 @@ void PeriphCommonClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static uint8_t ctrResetButton = 0;
 
 /* USER CODE END 0 */
 
@@ -75,17 +76,12 @@ void PeriphCommonClock_Config(void);
   */
 int main(void) {
     /* USER CODE BEGIN 1 */
-
-    /*
-     * This snippet is used to reset the device later on if we have a second user button
-        *(uint32_t*)SRAM1_BASE = 0xFF0701; // 0xFF0701 is the reset code
-        NVIC_SystemReset(); // This will reset the device
-    */
-
-
-
+    uint8_t isFirstBoot = 0U;
 
     /* MCU Configuration--------------------------------------------------------*/
+    if(LL_RCC_IsActiveFlag_SFTRST( ) || LL_RCC_IsActiveFlag_OBLRST( )) {
+        isFirstBoot = 1U;
+    }
 
     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init();
@@ -117,6 +113,19 @@ int main(void) {
     //MX_USART1_UART_Init();
     MX_RF_Init();
 
+    if (isFirstBoot == 1U) {
+        HAL_RTCEx_BKUPWrite(&hrtc, 2, 0);
+        HAL_Delay(200);
+    }
+
+    uint32_t numberOfResets = HAL_RTCEx_BKUPRead(&hrtc, 2);
+    if (numberOfResets > 3) {
+        HAL_RTCEx_BKUPWrite(&hrtc, 2, 0);
+        HAL_Delay(200);
+        *(uint32_t*)SRAM1_BASE = 0xFF0701; // 0xFF0701 is the reset code
+        NVIC_SystemReset(); // This will reset the device
+    }
+
     /* USER CODE BEGIN 2 */
     if (HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED)
         != HAL_OK) {
@@ -136,6 +145,8 @@ int main(void) {
     /* Init code for STM32_WPAN */
     uint32_t reset_flags = __HAL_RCC_GET_FLAG(RCC_FLAG_PINRST);
     if (reset_flags) {
+        numberOfResets++;
+        HAL_RTCEx_BKUPWrite(&hrtc, 2, numberOfResets);
         // Der Reset wurde durch den Reset-Button ausgelöst
         for (int i = 0; i < 6; i++) {
             HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
@@ -143,6 +154,7 @@ int main(void) {
         }
         __HAL_RCC_CLEAR_RESET_FLAGS();
     }
+
     /* USER CODE END 2 */
 
     /* Init code for STM32_WPAN */

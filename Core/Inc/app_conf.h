@@ -48,6 +48,8 @@
 #define CFG_OTA_REBOOT_VAL_MSG            (*(uint8_t*)(SRAM1_BASE+0))
 #define CFG_OTA_START_SECTOR_IDX_VAL_MSG  (*(uint8_t*)(SRAM1_BASE+1))
 #define CFG_OTA_NBR_OF_SECTOR_VAL_MSG     (*(uint8_t*)(SRAM1_BASE+2))
+#define CFG_RESET_BUTTON_CTR              (*(uint8_t*)(SRAM1_BASE+4))
+
 
 /**
  * Define Tx Power
